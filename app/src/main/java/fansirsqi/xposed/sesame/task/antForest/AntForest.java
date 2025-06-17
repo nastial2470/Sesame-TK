@@ -58,7 +58,7 @@ import fansirsqi.xposed.sesame.util.Log;
 import fansirsqi.xposed.sesame.util.maps.UserMap;
 import fansirsqi.xposed.sesame.util.Notify;
 import fansirsqi.xposed.sesame.util.RandomUtil;
-import fansirsqi.xposed.sesame.util.ResUtil;
+import fansirsqi.xposed.sesame.util.ResChecker;
 import fansirsqi.xposed.sesame.util.TimeUtil;
 import lombok.Getter;
 
@@ -560,7 +560,7 @@ public class AntForest extends ModelTask {
     private void processCollectResult(String response, String successMessage) {
         try {
             JSONObject joEnergy = new JSONObject(response);
-            if (ResUtil.checkResultCode(joEnergy)) {
+            if (ResChecker.checkRes(joEnergy)) {
                 JSONArray bubbles = joEnergy.getJSONArray("bubbles");
                 if (bubbles.length() > 0) {
                     int collected = bubbles.getJSONObject(0).getInt("collectedEnergy");
@@ -602,7 +602,7 @@ public class AntForest extends ModelTask {
                 try {
                     String response = AntForestRpcCall.collectProp(giveConfigId, giveId);
                     JSONObject responseObj = new JSONObject(response);
-                    if (ResUtil.checkResultCode(responseObj)) {
+                    if (ResChecker.checkRes(responseObj)) {
                         String str = "领取道具🎭[" + propName + "]";
                         Log.forest(str);
                         Toast.show(str);
@@ -651,7 +651,7 @@ public class AntForest extends ModelTask {
                 String animalName = extInfo.getJSONObject("animal").getString("name");
                 String response = AntForestRpcCall.collectAnimalRobEnergy(propId, propType, shortDay);
                 JSONObject responseObj = new JSONObject(response);
-                if (ResUtil.checkResultCode(responseObj)) {
+                if (ResChecker.checkRes(responseObj)) {
                     int energy = extInfo.optInt("energy", 0);
                     String str = "收取[" + animalName + "]派遣能量🦩[" + energy + "g]";
                     Toast.show(str);
@@ -691,7 +691,7 @@ public class AntForest extends ModelTask {
                     try {
                         String response = AntForestRpcCall.queryFriendHomePage(uid);
                         JSONObject jo = new JSONObject(response);
-                        if (ResUtil.checkResultCode(jo)) {
+                        if (ResChecker.checkRes(jo)) {
                             String bizNo = jo.getString("bizNo");
                             KVMap<Integer, Boolean> waterCountKVNode = returnFriendWater(uid, bizNo, waterCount, waterFriendCount.getValue());
                             int actualWaterCount = waterCountKVNode.getKey();
@@ -862,7 +862,7 @@ public class AntForest extends ModelTask {
     private JSONObject collectUserEnergy(String userId, JSONObject userHomeObj) {
         try {
             // 1. 检查接口返回是否成功
-            if (!ResUtil.checkResultCode(userHomeObj)) {
+            if (!ResChecker.checkRes(userHomeObj)) {
                 Log.debug(TAG, "载入失败: " + userHomeObj.getString("resultDesc"));
                 return userHomeObj;
             }
@@ -1024,7 +1024,7 @@ public class AntForest extends ModelTask {
     private void collectFriendEnergy() {
         try {
             JSONObject friendsObject = new JSONObject(AntForestRpcCall.queryEnergyRanking());
-            if (!ResUtil.checkResultCode(friendsObject)) {
+            if (!ResChecker.checkRes(friendsObject)) {
                 Log.error(TAG, "获取好友排行榜失败: " + friendsObject.optString("resultDesc"));
                 return;
             }
@@ -1192,7 +1192,7 @@ public class AntForest extends ModelTask {
                             String giftBoxId = giftBox.getString("giftBoxId");
                             String title = giftBox.getString("title");
                             JSONObject giftBoxResult = new JSONObject(AntForestRpcCall.collectFriendGiftBox(giftBoxId, userId));
-                            if (!ResUtil.checkResultCode(giftBoxResult)) {
+                            if (!ResChecker.checkRes(giftBoxResult)) {
                                 Log.record(giftBoxResult.getString("resultDesc"));
                                 Log.runtime(giftBoxResult.toString());
                                 continue;
@@ -1233,7 +1233,7 @@ public class AntForest extends ModelTask {
                             continue;
                         }
                         JSONObject joProtect = new JSONObject(AntForestRpcCall.protectBubble(userId));
-                        if (!ResUtil.checkResultCode(joProtect)) {
+                        if (!ResChecker.checkRes(joProtect)) {
                             Log.record(joProtect.getString("resultDesc"));
                             Log.runtime(joProtect.toString());
                             continue;
@@ -1492,7 +1492,7 @@ public class AntForest extends ModelTask {
                                 String propId = userUsingProp.getString("propId");
                                 String propType = userUsingProp.getString("propType");
                                 JSONObject jo = new JSONObject(AntForestRpcCall.collectRobExpandEnergy(propId, propType));
-                                if (ResUtil.checkResultCode(jo)) {
+                                if (ResChecker.checkRes(jo)) {
                                     int collectEnergy = jo.optInt("collectEnergy");
                                     Log.forest("额外能量🌳[" + collectEnergy + "g][1.1倍能量卡]");
                                 }
@@ -1514,7 +1514,7 @@ public class AntForest extends ModelTask {
     private void popupTask() {
         try {
             JSONObject resData = new JSONObject(AntForestRpcCall.popupTask());
-            if (ResUtil.checkResultCode(resData)) {
+            if (ResChecker.checkRes(resData)) {
                 JSONArray forestSignVOList = resData.optJSONArray("forestSignVOList");
                 if (forestSignVOList != null) {
                     for (int i = 0; i < forestSignVOList.length(); i++) {
@@ -1528,7 +1528,7 @@ public class AntForest extends ModelTask {
                             if (signKey.equals(currentSignKey) && !signRecord.getBoolean("signed")) {
                                 JSONObject resData2 = new JSONObject(AntForestRpcCall.antiepSign(signId, UserMap.getCurrentUid()));
                                 GlobalThreadPools.sleep(100L);
-                                if (ResUtil.checkSuccess(resData2)) {
+                                if (ResChecker.checkRes(resData2)) {
                                     Log.forest("收集过期能量💊[" + signRecord.getInt("awardCount") + "g]");
                                 }
                                 break;
@@ -1655,7 +1655,7 @@ public class AntForest extends ModelTask {
                 if (signKey.equals(currentSignKey) && !signRecord.getBoolean("signed")) {
                     JSONObject joSign = new JSONObject(AntForestRpcCall.vitalitySign()); // 执行签到请求
                     GlobalThreadPools.sleep(300); // 等待300毫秒
-                    if (ResUtil.checkResultCode(joSign)) {
+                    if (ResChecker.checkRes(joSign)) {
                         Log.forest("森林签到📆成功");
                         return awardCount;
                     }
@@ -1681,7 +1681,7 @@ public class AntForest extends ModelTask {
                 boolean doubleCheck = false; // 标记是否需要再次检查任务
                 String s = AntForestRpcCall.queryTaskList(); // 查询任务列表
                 JSONObject jo = new JSONObject(s); // 解析响应为 JSON 对象
-                if (!ResUtil.checkResultCode(jo)) {
+                if (!ResChecker.checkRes(jo)) {
                     Log.record(jo.getString("resultDesc")); // 记录失败描述
                     Log.runtime(s); // 打印响应内容
                     break;
@@ -1713,7 +1713,7 @@ public class AntForest extends ModelTask {
 
                         if (TaskStatus.FINISHED.name().equals(taskStatus)) {
                             JSONObject joAward = new JSONObject(AntForestRpcCall.receiveTaskAward(sceneCode, taskType)); // 领取奖励请求
-                            if (ResUtil.checkSuccess(joAward)) {
+                            if (ResChecker.checkRes(joAward)) {
                                 Log.forest("森林奖励🎖️[" + taskTitle + "]# " + awardCount + "活力值");
                                 SumawardCount = SumawardCount + awardCount;
                                 doubleCheck = true; // 标记需要重新检查任务
@@ -1724,7 +1724,7 @@ public class AntForest extends ModelTask {
                         } else if (TaskStatus.TODO.name().equals(taskStatus)) {
                             if (!taskList.contains(taskType)) {
                                 JSONObject joFinishTask = new JSONObject(AntForestRpcCall.finishTask(sceneCode, taskType)); // 完成任务请求
-                                if (ResUtil.checkSuccess(joFinishTask)) {
+                                if (ResChecker.checkRes(joFinishTask)) {
                                     Log.forest("森林任务🧾️[" + taskTitle + "]");
                                     doubleCheck = true; // 标记需要重新检查任务
                                 } else {
@@ -1837,7 +1837,7 @@ public class AntForest extends ModelTask {
             do {
                 // 查询道具列表
                 JSONObject propListJo = new JSONObject(AntForestRpcCall.queryPropList(true));
-                if (ResUtil.checkResultCode(propListJo)) {
+                if (ResChecker.checkRes(propListJo)) {
                     JSONArray forestPropVOList = propListJo.optJSONArray("forestPropVOList");
                     if (forestPropVOList != null && forestPropVOList.length() > 0) {
                         JSONObject propJo = forestPropVOList.getJSONObject(0);
@@ -1846,7 +1846,7 @@ public class AntForest extends ModelTask {
                         String propName = propJo.getJSONObject("propConfigVO").getString("propName");
                         String propId = propJo.getJSONArray("propIdList").getString(0);
                         JSONObject giveResultJo = new JSONObject(AntForestRpcCall.giveProp(giveConfigId, propId, targetUserId));
-                        if (ResUtil.checkResultCode(giveResultJo)) {
+                        if (ResChecker.checkRes(giveResultJo)) {
                             Log.forest("赠送道具🎭[" + UserMap.getMaskName(targetUserId) + "]#" + propName);
                         } else {
                             Log.record(giveResultJo.getString("resultDesc"));
@@ -1882,7 +1882,7 @@ public class AntForest extends ModelTask {
                 JSONObject jo = new JSONObject(AntForestRpcCall.queryUserPatrol());
                 GlobalThreadPools.sleep(waitTime);
                 // 如果查询成功
-                if (ResUtil.checkResultCode(jo)) {
+                if (ResChecker.checkRes(jo)) {
                     // 查询我的巡护记录
                     JSONObject resData = new JSONObject(AntForestRpcCall.queryMyPatrolRecord());
                     GlobalThreadPools.sleep(waitTime);
@@ -1899,7 +1899,7 @@ public class AntForest extends ModelTask {
                                     resData = new JSONObject(AntForestRpcCall.switchUserPatrol(patrolId));
                                     GlobalThreadPools.sleep(waitTime);
                                     // 如果切换成功，打印日志并继续
-                                    if (ResUtil.checkResultCode(resData)) {
+                                    if (ResChecker.checkRes(resData)) {
                                         Log.forest("巡护⚖️-切换地图至" + patrolId);
                                     }
                                     continue; // 跳过当前循环
@@ -1926,7 +1926,7 @@ public class AntForest extends ModelTask {
                         } else if (leftStep >= 2000 && usedStep < 10000) {// 如果没有剩余的巡护次数但步数足够，则兑换巡护次数
                             jo = new JSONObject(AntForestRpcCall.exchangePatrolChance(leftStep));
                             GlobalThreadPools.sleep(waitTime);
-                            if (ResUtil.checkResultCode(jo)) {// 兑换成功，增加巡护次数
+                            if (ResChecker.checkRes(jo)) {// 兑换成功，增加巡护次数
                                 int addedChance = jo.optInt("addedChance", 0);
                                 Log.forest("步数兑换⚖️[巡护次数*" + addedChance + "]");
                                 continue; // 跳过当前循环
@@ -1971,7 +1971,7 @@ public class AntForest extends ModelTask {
                     Log.printStackTrace(TAG, e);
                     return; // 解析失败，退出循环
                 }
-                if (!ResUtil.checkResultCode(jo)) {
+                if (!ResChecker.checkRes(jo)) {
                     Log.runtime(TAG, jo.getString("resultDesc"));
                     break;
                 }
@@ -2016,7 +2016,7 @@ public class AntForest extends ModelTask {
         try {
             // 查询动物属性列表
             JSONObject jo = new JSONObject(AntForestRpcCall.queryAnimalPropList());
-            if (!ResUtil.checkResultCode(jo)) {
+            if (!ResChecker.checkRes(jo)) {
                 Log.runtime(TAG, jo.getString("resultDesc"));
                 return;
             }
@@ -2051,7 +2051,7 @@ public class AntForest extends ModelTask {
             String name = animalProp.getJSONObject("partner").getString("name");
             // 调用API进行伙伴派遣
             JSONObject jo = new JSONObject(AntForestRpcCall.consumeProp(propGroup, propType, false));
-            if (ResUtil.checkResultCode(jo)) {
+            if (ResChecker.checkRes(jo)) {
                 Log.forest("巡护派遣🐆[" + name + "]");
             } else {
                 Log.runtime(TAG, jo.getString("resultDesc"));
@@ -2196,7 +2196,7 @@ public class AntForest extends ModelTask {
     private JSONObject queryPropList() {
         try {
             JSONObject bagObject = new JSONObject(AntForestRpcCall.queryPropList(false));
-            if (ResUtil.checkSuccess(bagObject)) {
+            if (ResChecker.checkRes(bagObject)) {
                 return bagObject;
             }
             Log.error(TAG, "获取背包信息失败: " + bagObject);
@@ -2247,7 +2247,7 @@ public class AntForest extends ModelTask {
         }
         try {
             JSONObject jo = new JSONObject(AntForestRpcCall.consumeProp(propJsonObj.getJSONArray("propIdList").getString(0), propJsonObj.getString("propType")));
-            if (ResUtil.checkSuccess(jo)) {
+            if (ResChecker.checkRes(jo)) {
                 String propName = propJsonObj.getJSONObject("propConfigVO").getString("propName");
                 String tag = propEmoji(propName);
                 Log.forest("使用道具" + tag + "[" + propName + "]");

@@ -458,7 +458,7 @@ public class AntOrchard extends ModelTask {
       }
       Set<String> friendSet = assistFriendList.getValue();
       for (String uid : friendSet) {
-        String shareId = Base64.encodeToString((uid + "-" + RandomUtil.getRandom(5) + "ANTFARM_ORCHARD_SHARE_P2P").getBytes(), Base64.NO_WRAP);
+        String shareId = Base64.encodeToString((uid + "-" + RandomUtil.getRandomInt(5) + "ANTFARM_ORCHARD_SHARE_P2P").getBytes(), Base64.NO_WRAP);
         String str = AntOrchardRpcCall.achieveBeShareP2P(shareId);
         JSONObject jsonObject = new JSONObject(str);
         GlobalThreadPools.sleep(800);

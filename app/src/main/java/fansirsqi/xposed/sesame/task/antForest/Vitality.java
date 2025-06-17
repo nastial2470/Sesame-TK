@@ -8,7 +8,7 @@ import fansirsqi.xposed.sesame.util.Log;
 import fansirsqi.xposed.sesame.util.maps.IdMapManager;
 import fansirsqi.xposed.sesame.util.maps.UserMap;
 import fansirsqi.xposed.sesame.util.maps.VitalityRewardsMap;
-import fansirsqi.xposed.sesame.util.ResUtil;
+import fansirsqi.xposed.sesame.util.ResChecker;
 import fansirsqi.xposed.sesame.data.Status;
 /**
  * @author Byseven
@@ -22,7 +22,7 @@ public class Vitality {
         JSONArray itemInfoVOList = null;
         try {
             JSONObject jo = new JSONObject(AntForestRpcCall.itemList(labelType));
-            if (ResUtil.checkSuccess( jo)) {
+            if (ResChecker.checkRes( jo)) {
                 itemInfoVOList = jo.optJSONArray("itemInfoVOList");
             }
         } catch (Throwable th) {
@@ -34,7 +34,7 @@ public class Vitality {
     public static void ItemDetailBySpuId(String spuId) {
         try {
             JSONObject jo = new JSONObject(AntForestRpcCall.itemDetail(spuId));
-            if (ResUtil.checkSuccess( jo)) {
+            if (ResChecker.checkRes( jo)) {
                 JSONObject ItemDetail = jo.getJSONObject("spuItemInfoVO");
                 handleItemDetail(ItemDetail);
             }
@@ -162,7 +162,7 @@ public class Vitality {
     private static Boolean VitalityExchange(String spuId, String skuId) {
         try {
             JSONObject jo = new JSONObject(AntForestRpcCall.exchangeBenefit(spuId, skuId));
-            return ResUtil.checkResultCode(TAG, jo);
+            return ResChecker.checkRes(TAG, jo);
         } catch (Throwable th) {
             Log.runtime(TAG, "VitalityExchange err:" + spuId + "," + skuId);
             Log.printStackTrace(TAG, th);

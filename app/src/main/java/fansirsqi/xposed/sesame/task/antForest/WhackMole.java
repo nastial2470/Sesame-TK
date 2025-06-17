@@ -8,7 +8,7 @@ import java.util.List;
 
 import fansirsqi.xposed.sesame.util.GlobalThreadPools;
 import fansirsqi.xposed.sesame.util.Log;
-import fansirsqi.xposed.sesame.util.ResUtil;
+import fansirsqi.xposed.sesame.util.ResChecker;
 
 /**
  * @author Byseven
@@ -39,7 +39,7 @@ public class WhackMole {
                         long elapsedTime = System.currentTimeMillis() - startTime; // 计算已耗时间
                         GlobalThreadPools.sleep(Math.max(0, 6000 - elapsedTime)); // 睡眠至6秒
                         response = new JSONObject(AntForestRpcCall.settlementWhackMole(token, moleIdList, "senlinguangchangdadishu"));
-                        if (ResUtil.checkResultCode(response)) {
+                        if (ResChecker.checkRes(response)) {
                             int totalEnergy = response.getInt("totalEnergy");
                             Log.forest("森林能量⚡️[获得:6秒拼手速能量 " + totalEnergy + "g]");
                         }

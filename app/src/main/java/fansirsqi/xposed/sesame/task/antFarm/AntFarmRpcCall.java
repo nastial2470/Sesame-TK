@@ -15,15 +15,42 @@ import fansirsqi.xposed.sesame.util.RandomUtil;
 public class AntFarmRpcCall {
     private static final String VERSION = "1.8.2302070202.46";
 
-    public static String enterFarm(String farmId, String userId) {
-        String shareUniqueId = System.currentTimeMillis() + "_" + userId;
-        return RequestManager.requestString("com.alipay.antfarm.enterFarm",
-                "[{\"animalId\":\"\",\"farmId\":\"" + farmId +
-                        "\",\"gotoneScene\":\"\",\"gotoneTemplateId\":\"\",\"masterFarmId\":\"\",\"queryLastRecordNum\":true," +
-                        "\"recall\":false,\"requestType\":\"NORMAL\",\"sceneCode\":\"ANTFARM\",\"source\":\"ANTFOREST\"," +
-                        "\"touchRecordId\":\"\",\"userId\":\"" + userId + "\",\"shareUniqueId\":\"" + shareUniqueId + "\"," +
-                        "\"version\":\"" + VERSION + "\"}]");
+
+    /**
+     * 进入农场
+     *
+     * @param userId       自己的用户id
+     * @param targetUserId 所在农场的用户id
+     * @return 返回结果
+     * @throws JSONException 异常内容
+     */
+    public static String enterFarm(String userId, String targetUserId) throws JSONException {
+        JSONObject args = new JSONObject();
+        args.put("animalId", "");
+        args.put("bizCode", "");
+        args.put("gotoneScene", "");
+        args.put("gotoneTemplateId", "");
+        args.put("groupId", "");
+        args.put("growthExtInfo", "");
+        args.put("inviteUserId", "");
+        args.put("masterFarmId", "");
+        args.put("queryLastRecordNum", true);
+        args.put("recall", false);
+        args.put("requestType", "NORMAL");
+        args.put("sceneCode", "ANTFARM");
+        args.put("shareId", "");
+        args.put("shareUniqueId", System.currentTimeMillis() + "_" + targetUserId);
+        args.put("source", "ANTFOREST");
+        args.put("starFarmId", "");
+        args.put("subBizCode", "");
+        args.put("touchRecordId", "");
+        args.put("userId", userId);
+        args.put("userToken", "");
+        args.put("version", VERSION);
+        String pamras = "[" + args + "]";
+        return RequestManager.requestString("com.alipay.antfarm.enterFarm", pamras);
     }
+
 
     // 一起拿小鸡饲料
     public static String letsGetChickenFeedTogether() {

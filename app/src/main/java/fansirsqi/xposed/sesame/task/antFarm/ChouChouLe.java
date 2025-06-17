@@ -9,7 +9,7 @@ import java.util.List;
 import fansirsqi.xposed.sesame.util.GlobalThreadPools;
 import fansirsqi.xposed.sesame.util.Log;
 import fansirsqi.xposed.sesame.util.maps.UserMap;
-import fansirsqi.xposed.sesame.util.ResUtil;
+import fansirsqi.xposed.sesame.util.ResChecker;
 
 public class ChouChouLe {
     private static final String TAG = ChouChouLe.class.getSimpleName();
@@ -70,7 +70,7 @@ public class ChouChouLe {
             doubleCheck = false;
             try {
                 JSONObject jo = new JSONObject(AntFarmRpcCall.chouchouleListFarmTask(drawType));
-                if (!ResUtil.checkResultCode(TAG, jo)) {
+                if (!ResChecker.checkRes(TAG, jo)) {
                     Log.error(TAG, drawType.equals("ipDraw") ? "IP抽抽乐任务列表获取失败" : "抽抽乐任务列表获取失败");
                     continue;
                 }
@@ -122,7 +122,7 @@ public class ChouChouLe {
         try {
             String s = AntFarmRpcCall.chouchouleDoFarmTask(drawType, task.taskId);
             JSONObject jo = new JSONObject(s);
-            if (ResUtil.checkResultCode(TAG, jo)) {
+            if (ResChecker.checkRes(TAG, jo)) {
                 Log.farm((drawType.equals("ipDraw") ? "IP抽抽乐" : "抽抽乐") + "🧾️[任务: " + task.title + "]");
                 return true;
             }
@@ -144,7 +144,7 @@ public class ChouChouLe {
         try {
             String s = AntFarmRpcCall.chouchouleReceiveFarmTaskAward(drawType, taskId);
             JSONObject jo = new JSONObject(s);
-            return ResUtil.checkResultCode(TAG, jo);
+            return ResChecker.checkRes(TAG, jo);
         } catch (Throwable t) {
             Log.printStackTrace("receiveFarmTaskAward err:", t);
         }
@@ -157,7 +157,7 @@ public class ChouChouLe {
     private void handleIpDraw() {
         try {
             JSONObject jo = new JSONObject(AntFarmRpcCall.queryDrawMachineActivity());
-            if (!ResUtil.checkResultCode(TAG, jo)) {
+            if (!ResChecker.checkRes(TAG, jo)) {
                 return;
             }
 
@@ -185,7 +185,7 @@ public class ChouChouLe {
     private void handleDailyDraw() {
         try {
             JSONObject jo = new JSONObject(AntFarmRpcCall.enterDrawMachine());
-            if (!ResUtil.checkResultCode(TAG, jo)) {
+            if (!ResChecker.checkRes(TAG, jo)) {
                 Log.record(TAG, "抽奖活动进入失败");
                 return;
             }
@@ -221,7 +221,7 @@ public class ChouChouLe {
     private void drawPrize(String prefix, String response) {
         try {
             JSONObject jo = new JSONObject(response);
-            if (ResUtil.checkResultCode(TAG, jo)) {
+            if (ResChecker.checkRes(TAG, jo)) {
                 String title = jo.getString("title");
                 int prizeNum = jo.optInt("prizeNum", 1);
                 Log.farm(prefix + "🎁[领取: " + title + "*" + prizeNum + "]");

@@ -66,7 +66,7 @@ public class RandomUtil {
      * @param len 随机字符串的长度。
      * @return 生成的随机数字字符串。
      */
-    public static String getRandom(int len) {
+    public static String getRandomInt(int len) {
         StringBuilder rs = new StringBuilder();
         for (int i = 0; i < len; i++) {
             rs.append(rnd.nextInt(10));

@@ -334,7 +334,7 @@ public class AntForestRpcCall {
     public static String exchangeBenefit(String spuId, String skuId) throws JSONException {
         JSONObject jo = new JSONObject();
         jo.put("sceneCode", "ANTFOREST_VITALITY");
-        jo.put("requestId", System.currentTimeMillis() + "_" + RandomUtil.getRandom(17));
+        jo.put("requestId", System.currentTimeMillis() + "_" + RandomUtil.getRandomInt(17));
         jo.put("spuId", spuId);
         jo.put("skuId", skuId);
         jo.put("source", "GOOD_DETAIL");

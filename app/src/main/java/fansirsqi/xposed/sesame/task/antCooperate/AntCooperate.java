@@ -18,7 +18,7 @@ import fansirsqi.xposed.sesame.util.GlobalThreadPools;
 import fansirsqi.xposed.sesame.util.Log;
 import fansirsqi.xposed.sesame.util.maps.CooperateMap;
 import fansirsqi.xposed.sesame.util.maps.UserMap;
-import fansirsqi.xposed.sesame.util.ResUtil;
+import fansirsqi.xposed.sesame.util.ResChecker;
 import fansirsqi.xposed.sesame.data.Status;
 import fansirsqi.xposed.sesame.util.TimeUtil;
 
@@ -77,7 +77,7 @@ public class AntCooperate extends ModelTask {
             if (cooperateWater.getValue()) {
                 String s = AntCooperateRpcCall.queryUserCooperatePlantList();
                 JSONObject jo = new JSONObject(s);
-                if (ResUtil.checkResultCode(jo)) {
+                if (ResChecker.checkRes(jo)) {
                     Log.runtime(TAG, "获取合种列表成功");
                     int userCurrentEnergy = jo.getInt("userCurrentEnergy");
                     JSONArray ja = jo.getJSONArray("cooperatePlants");
@@ -147,7 +147,7 @@ public class AntCooperate extends ModelTask {
         try {
             String s = AntCooperateRpcCall.cooperateWater(UserMap.getCurrentUid(), coopId, count);
             JSONObject jo = new JSONObject(s);
-            if (ResUtil.checkResultCode(jo)) {
+            if (ResChecker.checkRes(jo)) {
                 Log.forest("合种浇水🚿[" + name + "]" + jo.getString("barrageText"));
                 Status.cooperateWaterToday(UserMap.getCurrentUid(), coopId);
             } else {
@@ -194,13 +194,13 @@ public class AntCooperate extends ModelTask {
             }
             TimeUtil.sleep(500);
             JSONObject jo = new JSONObject(AntCooperateRpcCall.queryCooperateRank("D", cooperationId));
-            if (ResUtil.checkResultCode(TAG, jo)) {
+            if (ResChecker.checkRes(TAG, jo)) {
                 JSONArray cooperateRankInfos = jo.getJSONArray("cooperateRankInfos");
                 for (int i = 0; i < cooperateRankInfos.length(); i++) {
                     JSONObject rankInfo = cooperateRankInfos.getJSONObject(i);
                     if (rankInfo.getBoolean("canBeckon")) {
                         jo = new JSONObject(AntCooperateRpcCall.sendCooperateBeckon(rankInfo.getString("userId"), cooperationId));
-                        if (ResUtil.checkSuccess(jo)) {
+                        if (ResChecker.checkRes(jo)) {
                             Log.forest("合种🚿[" + name + "]#召唤队友[" + rankInfo.getString("displayName") + "]成功");
                         }
                         TimeUtil.sleep(1000);
