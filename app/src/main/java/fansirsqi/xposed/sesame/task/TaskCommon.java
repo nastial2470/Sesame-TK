@@ -21,7 +21,9 @@ public class TaskCommon {
         Log.runtime("TaskCommon Update:");
         long currentTimeMillis = System.currentTimeMillis();
         List<String> isEnergyTime = BaseModel.getEnergyTime().getValue();
+        Log.runtime("获取能量时间配置:" + isEnergyTime);
         if (isEnergyTime.contains("-1")) {
+            Log.runtime("只收能量时间配置已关闭");
             IS_ENERGY_TIME = false;
         } else {
             IS_ENERGY_TIME = TimeUtil.checkInTimeRange(currentTimeMillis, isEnergyTime);
@@ -30,7 +32,7 @@ public class TaskCommon {
         List<String> isModuleSleepTime = BaseModel.getModelSleepTime().getValue();
         Log.runtime("获取模块休眠配置:" + isModuleSleepTime);
         if (isModuleSleepTime.contains("-1")) {
-            Log.runtime("模块休眠配置 -1，不进行休眠");
+            Log.runtime("休眠配置已关闭");
             IS_MODULE_SLEEP_TIME = false;
         } else {
             IS_MODULE_SLEEP_TIME = TimeUtil.checkInTimeRange(currentTimeMillis, isModuleSleepTime);
